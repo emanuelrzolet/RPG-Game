@@ -1,14 +1,29 @@
 import pygame
-# Inicialização do pygame e da janela
-print("Sistem start")
+
+# Inicializa o Pygame
 pygame.init()
-screen = pygame.display.set_mode(size=(600,480))
-print("Sistem end")
-print("Loop start")
+
+# Obtém informações sobre o dispositivo de exibição
+info = pygame.display.Info()
+
+# Obtém a largura e altura da tela
+largura = info.current_w / 2
+altura = info.current_h / 2
+
+# Cria uma janela com a resolução da tela
+tela = pygame.display.set_mode((largura, altura))
+
+# Loop principal do jogo
 while True:
-    # Check for all Events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit() #Close screen
-            print("Saindo")
-            quit() #end pygame
+    # Processa eventos
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+    # Desenha na tela
+    tela.fill((0, 0, 0))  # Preenche a tela com preto
+    
+    pygame.draw.circle(tela, "red",(200,200),4)
+    
+    pygame.display.flip()  # Atualiza a tela
