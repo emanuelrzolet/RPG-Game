@@ -24,10 +24,5 @@ class Game:
             # Chamada do Menu e criação da classe
             menu = Menu(self.window)
             menu.run()
-            
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
 
             

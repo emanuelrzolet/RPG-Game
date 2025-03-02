@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 class Level:
-    def __init__(self):
-        self.window = None
-        self.name = None
-        self.entity_list = None
+    def __init__(self,window):
+        self.window = window
 
-    def run(self, ):
-        pass
+    def run(self):
+        self.window.fill((0, 0, 0)) # Fundo preto
