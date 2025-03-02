@@ -1,23 +1,27 @@
-from code import menu
 import pygame
-
-from code.menu import Menu
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 class Game:
     def __init__(self):
-        pygame.init()
-        # Inicialização do pygame e da janela
-        self.window = pygame.display.set_mode(size=(600,480))
+        # Inicializa o Pygame
+        pygame.__init__()
 
-    def run(self, ):
-        while True:
-            menu = Menu(self.window)
-            menu.run()
-            # # Check for all Events
-            # for event in pygame.event.get():
-            #     if event.type == pygame.QUIT:
-            #         pygame.quit() #Close screen
-            #         print("Saindo")
-            #         quit() #end pygame
+        # Obtém informações sobre o dispositivo de exibição
+        info = pygame.display.Info()
+
+        # Obtém a largura e altura da tela
+        largura = info.current_w / 2
+        altura = info.current_h / 2
+
+        # Cria uma janela com a resolução da tela
+        tela = pygame.display.set_mode((largura, altura))
+        
+        
+        def run():
+            # Loop principal do jogo
+            while True:
+                # Processa eventos
+                for evento in pygame.event.get():
+                    if evento.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+
+            
