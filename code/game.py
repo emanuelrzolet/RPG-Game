@@ -1,3 +1,4 @@
+import json
 import pygame
 
 from code.menu import Menu
@@ -16,6 +17,15 @@ class Game:
         # Cria uma janela com a resolução da tela
         self.window = pygame.display.set_mode((largura, altura))
         
+        # Cria um arquivo Json com as constantes
+        resolucao = (info.current_w, info.current_h)
+        def salvar_constantes(dados, arquivo="constantes.json"):
+            with open(arquivo, "w") as f:
+                json.dump(dados, f)
+        salvar_constantes(resolucao)
+        
+        
+        
         
     def run(self):
         # Loop principal do jogo
@@ -24,5 +34,3 @@ class Game:
             # Chamada do Menu e criação da classe
             menu = Menu(self.window)
             menu.run()
-
-            
