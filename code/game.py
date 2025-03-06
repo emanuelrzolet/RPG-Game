@@ -1,4 +1,3 @@
-import json
 import pygame
 
 from code.menu import Menu
@@ -7,7 +6,7 @@ class Game:
         # Inicializa o Pygame
         pygame.init()
 
-        # Obtém informações sobre o dispositivo de exibição
+        # Obtém informações sobre o dispositivo de exibição e a
         info = pygame.display.Info()
 
         # Obtém a largura e altura da tela
@@ -16,15 +15,6 @@ class Game:
 
         # Cria uma janela com a resolução da tela
         self.window = pygame.display.set_mode((largura, altura))
-        
-        # Cria um arquivo Json com as constantes
-        resolucao = (info.current_w, info.current_h)
-        def salvar_constantes(dados, arquivo="constantes.json"):
-            with open(arquivo, "w") as f:
-                json.dump(dados, f)
-        salvar_constantes(resolucao)
-        
-        
         
         
     def run(self):
