@@ -3,11 +3,15 @@
 
 import pygame
 
+from code.entity import Entity
+
 
 
 class Level:
-    def __init__(self,window):
+    def __init__(self, window, name):
         self.window = window
+        self.name = name
+        self.entity_list: list[Entity] = []
 
     def run(self):
         self.window.fill((0, 0, 0)) # Fundo preto

@@ -1,6 +1,6 @@
 import pygame
 
-from code.menu import Menu
+from code.menu import Menu, Level
 class Game:
     def __init__(self):
         # Inicializa o Pygame
@@ -23,4 +23,8 @@ class Game:
             # Processa eventos
             # Chamada do Menu e criação da classe
             menu = Menu(self.window)
-            menu.run()
+            # Se o retorno for true quer dizer que o laço vai finalizar pois foi clickado no botão de iniciar game
+            menuReturn = menu.run()
+            if menuReturn == True:
+                level = Level(self.window, name="Level1")
+                level.run()

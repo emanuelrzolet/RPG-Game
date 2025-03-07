@@ -75,8 +75,8 @@ class Menu:
                     quit()
                 if evento.type == pygame.MOUSEBUTTONDOWN:
                     if self.botao_novo_jogo.collidepoint(evento.pos):
-                        level = Level(self.window)
-                        level.run()
+                        # programa encerra o laço aqui
+                        return True
                     elif self.botao_opcoes.collidepoint(evento.pos):
                         self.menu_opcoes()
                     elif self.botao_sair.collidepoint(evento.pos):
