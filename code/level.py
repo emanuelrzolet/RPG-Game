@@ -1,60 +1,32 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import pygame
 
 from code.entity import Entity
-
-
 
 class Level:
     def __init__(self, window, name):
         self.window = window
         self.name = name
         self.entity_list: list[Entity] = []
+        try:
+            self.background = pygame.image.load("./assets/background_1.png").convert_alpha() # Otimização
+        except pygame.error as e:
+            print(f"Erro ao carregar a imagem de fundo: {e}")
+            self.background = None
 
     def run(self):
-        self.window.fill((0, 0, 0)) # Fundo preto
+        self.window.fill((0, 0, 0))  # Fundo preto
+        if self.background:
+            self.window.blit(self.background, (0, 0))  # Desenha o background na posição (0,0)
         print("run foi chamada")
         pygame.display.flip()
-        
-        
-        
-        
-    # Teste
-    # clock = pygame.time.Clock()
-    # running = True
-    # dt = 0
 
-    # player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+    def game_loop(self):
+        executando = True
+        while executando:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    executando = False
 
-    # while running:
-    #     # poll for events
-    #     # pygame.QUIT event means the user clicked X to close your window
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             running = False
+            self.run() # redesenha o level.
 
-    #     # fill the screen with a color to wipe away anything from last frame
-    #     screen.fill("purple")
-
-    #     pygame.draw.circle(screen, "red", player_pos, 40)
-
-    #     keys = pygame.key.get_pressed()
-    #     if keys[pygame.K_w]:
-    #         player_pos.y -= 300 * dt
-    #     if keys[pygame.K_s]:
-    #         player_pos.y += 300 * dt
-    #     if keys[pygame.K_a]:
-    #         player_pos.x -= 300 * dt
-    #     if keys[pygame.K_d]:
-    #         player_pos.x += 300 * dt
-
-    #     # flip() the display to put your work on screen
-    #     pygame.display.flip()
-
-    #     # limits FPS to 60
-    #     # dt is delta time in seconds since last frame, used for framerate-
-    #     # independent physics.
-    #     dt = clock.tick(60) / 1000
-            
+        pygame.quit()
