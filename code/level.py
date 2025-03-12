@@ -8,18 +8,20 @@ class Level:
         self.window = window
         self.name = name
         self.entity_list: list[Entity] = []
-        self.entity_list.append(EntityFactory.get_entity('player'))
+        self.player = EntityFactory.get_entity('player')
+        self.entity_list.append(self.player)
         try:
-            self.background = pygame.image.load("./assets/background_1.png").convert_alpha() # Otimização
+            self.background = pygame.image.load("./assets/background_1.png").convert_alpha()
         except pygame.error as e:
             print(f"Erro ao carregar a imagem de fundo: {e}")
             self.background = None
 
     def run(self):
-        self.window.fill((0, 0, 0))  # Fundo preto
+        self.window.fill((0, 0, 0))
         if self.background:
-            self.window.blit(self.background, (0, 0))  # Desenha o background na posição (0,0)
-        print("run foi chamada")
+            self.window.blit(self.background, (0, 0))
+        self.window.blit(self.player.image, self.player.rect)  # Desenha a imagem do jogador
+        self.player.projectile_group.draw(self.window)
         pygame.display.flip()
 
     def game_loop(self):
@@ -28,7 +30,11 @@ class Level:
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     executando = False
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    if evento.button == 1:
+                        self.player.shoot(pygame.mouse.get_pos())
 
-            self.run() # redesenha o level.
+            self.player.update()
+            self.run()
 
         pygame.quit()

@@ -1,20 +1,12 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 from abc import ABC, abstractmethod
-from turtle import left
-
-import pygame.image
-
+import pygame
 
 class Entity(ABC):
     def __init__(self, name: str, position: tuple):
         self.name = name
-        self.surf = pygame.image.load("./assets/" + name + ".png")
-        self.rect = self.surf.get_rect(left=position[0], top=position[1])
+        self.rect = pygame.Rect(position[0], position[1], 0, 0)  # Retângulo inicial
         self.speed = 0
-        
-        
+
     @abstractmethod
-    def move(self, ):
+    def move(self):
         pass
