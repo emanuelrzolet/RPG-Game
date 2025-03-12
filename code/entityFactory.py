@@ -1,13 +1,20 @@
-#!/usr/bin/python
+import pygame
+from code.player import Player
+
+
+# !/usr/bin/python
 # -*- coding: utf-8 -*-
 
 
 
-# class EntityFactory:
-#     @staticmethod
-#     def get_entity(entity_name: str, positions=(0,0)):
-#         match entity_name:
-#             case 'background1':
-#                 lista_bg = []
-#                 for i in range(7):
-#                     list_bg.append(Background(f'Level'))
+class EntityFactory:
+    
+    
+    @staticmethod
+    def get_entity(entity_name: str, positions=(0,0)):
+        info = pygame.display.Info()
+        largura = info.current_w
+        altura = info.current_h
+        match entity_name:
+            case 'player':
+                return Player('player', (0, altura /2))

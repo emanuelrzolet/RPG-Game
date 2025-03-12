@@ -1,12 +1,14 @@
 import pygame
 
 from code.entity import Entity
+from code.entityFactory import EntityFactory
 
 class Level:
     def __init__(self, window, name):
         self.window = window
         self.name = name
         self.entity_list: list[Entity] = []
+        self.entity_list.append(EntityFactory.get_entity('player'))
         try:
             self.background = pygame.image.load("./assets/background_1.png").convert_alpha() # Otimização
         except pygame.error as e:
