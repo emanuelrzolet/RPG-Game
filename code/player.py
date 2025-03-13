@@ -7,21 +7,29 @@ class Player(Entity):
     def __init__(self, name: str, position: tuple):
         super().__init__(name, position)
         self.projectile_group = pygame.sprite.Group()
-        self.image = pygame.Surface((30, 30), pygame.SRCALPHA)  # Superfície para desenhar o triângulo
+        self.image = pygame.Surface((30, 30), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=position)
         self.draw_triangle()
 
     def draw_triangle(self):
         points = [(self.rect.width / 2, 0), (0, self.rect.height), (self.rect.width, self.rect.height)]
-        pygame.draw.polygon(self.image, (255, 255, 255), points)  # Desenha o triângulo branco
+        pygame.draw.polygon(self.image, (255, 255, 255), points)
 
-    def move(self):
-        # pressed_key = 
-        pass
+    def move(self,):
+        pressed_key = pygame.key.get_pressed()
+        if pressed_key[pygame.K_w] and self.rect.top > 0:
+            self.rect.centery -= 1
+        if pressed_key[pygame.K_s] and self.rect.bottom > 0:
+            self.rect.centery += 1
+        if pressed_key[pygame.K_a]:
+            self.rect.centerx -= 1
+        if pressed_key[pygame.K_d]:
+            self.rect.centerx += 1
 
     def shoot(self, target):
         projectile = Projectile(self.rect.center, target)
         self.projectile_group.add(projectile)
 
     def update(self):
+        self.move()  # Chama o método move
         self.projectile_group.update()
