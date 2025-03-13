@@ -2,7 +2,7 @@ import pygame
 import math
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, position, target, speed=5):
+    def __init__(self, position, target, speed=2):
         super().__init__()
         self.image = pygame.Surface((10, 10), pygame.SRCALPHA)  # Superfície para desenhar o triângulo
         self.rect = self.image.get_rect(center=position)
