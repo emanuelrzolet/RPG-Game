@@ -1,0 +1,1 @@
+ENTITY_SPEED = {'player': 1}
