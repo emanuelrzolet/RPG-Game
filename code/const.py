@@ -1,1 +1,1 @@
-ENTITY_SPEED = {'player': 1}
+ENTITY_SPEED = {'player': 1, 'enemy': 1}
