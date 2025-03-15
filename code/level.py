@@ -19,6 +19,7 @@ class Level:
         self.clock = pygame.time.Clock()
         self.game_over = False
         self.font = pygame.font.Font(None, 36)
+        self.score = 0 # Inicializa o score
         try:
             self.background = pygame.image.load("./assets/background_1.png").convert_alpha()
         except pygame.error as e:
@@ -34,11 +35,16 @@ class Level:
         self.enemy_group.draw(self.window)
         self.heart_group.draw(self.window)
         self.draw_lives()
+        self.draw_score() # Desenha o score na tela
         pygame.display.flip()
 
     def draw_lives(self):
         for i in range(self.player.lives):
             pygame.draw.circle(self.window, (255, 0, 0), (20 + i * 30, 20), 10)
+
+    def draw_score(self):
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        self.window.blit(score_text, (10, 50))
 
     def game_loop(self):
         executando = True
@@ -90,6 +96,7 @@ class Level:
                 heart = dead_enemy.drop_heart()
                 if heart:
                     self.heart_group.add(heart)
+                self.score += 100 # Aumenta o score ao matar um inimigo
         player_collisions = pygame.sprite.spritecollide(self.player, self.enemy_group, True)
         if player_collisions:
             self.player.take_damage()
@@ -104,12 +111,16 @@ class Level:
         game_over_rect = game_over_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 - 50))
         self.window.blit(game_over_text, game_over_rect)
 
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255)) # Adiciona o score à tela de game over
+        score_rect = score_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
+        self.window.blit(score_text, score_rect)
+
         restart_text = self.font.render("Restart", True, (255, 255, 255))
-        restart_rect = restart_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
+        restart_rect = restart_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 50))
         self.window.blit(restart_text, restart_rect)
 
         quit_text = self.font.render("Quit", True, (255, 255, 255))
-        quit_rect = quit_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 50))
+        quit_rect = quit_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 100))
         self.window.blit(quit_text, quit_rect)
 
         pygame.display.flip()
