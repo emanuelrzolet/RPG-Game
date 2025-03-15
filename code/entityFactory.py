@@ -10,3 +10,5 @@ class EntityFactory:
         match entity_name:
             case 'player':
                 return Player('player', (0, altura / 2))
+            case 'enemy':
+                pass
