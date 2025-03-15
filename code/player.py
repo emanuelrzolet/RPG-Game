@@ -11,6 +11,7 @@ class Player(Entity):
         self.image = pygame.Surface((30, 30), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=position)
         self.draw_triangle()
+        self.lives = 3  # Adiciona a variável de vidas
 
     def draw_triangle(self):
         points = [(self.rect.width / 2, 0), (0, self.rect.height), (self.rect.width, self.rect.height)]
@@ -27,10 +28,18 @@ class Player(Entity):
             self.rect.centerx -= ENTITY_SPEED[self.name]
         if pressed_key[pygame.K_d] and self.rect.right < info.current_w:
             self.rect.centerx += ENTITY_SPEED[self.name]
+
     def shoot(self, target):
         projectile = Projectile(self.rect.center, target)
         self.projectile_group.add(projectile)
 
+    def take_damage(self):
+        self.lives -= 1
+
+    def heal(self):
+        if self.lives < 3:
+          self.lives += 1
+
     def update(self):
-        self.move()  # Chama o método move
+        self.move()
         self.projectile_group.update()

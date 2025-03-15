@@ -3,7 +3,7 @@ import random
 
 from code.entity import Entity
 from code.entityFactory import EntityFactory
-from code.enemy import Enemy
+from code.enemy import Enemy, Heart
 
 class Level:
     def __init__(self, window, name):
@@ -13,9 +13,12 @@ class Level:
         self.player = EntityFactory.get_entity('player')
         self.entity_list.append(self.player)
         self.enemy_group = pygame.sprite.Group()
+        self.heart_group = pygame.sprite.Group()
         self.enemy_timer = 0
         self.enemy_interval = 60
-        self.clock = pygame.time.Clock()  # Cria um objeto Clock
+        self.clock = pygame.time.Clock()
+        self.game_over = False
+        self.font = pygame.font.Font(None, 36)
         try:
             self.background = pygame.image.load("./assets/background_1.png").convert_alpha()
         except pygame.error as e:
@@ -29,7 +32,13 @@ class Level:
         self.window.blit(self.player.image, self.player.rect)
         self.player.projectile_group.draw(self.window)
         self.enemy_group.draw(self.window)
+        self.heart_group.draw(self.window)
+        self.draw_lives()
         pygame.display.flip()
+
+    def draw_lives(self):
+        for i in range(self.player.lives):
+            pygame.draw.circle(self.window, (255, 0, 0), (20 + i * 30, 20), 10)
 
     def game_loop(self):
         executando = True
@@ -41,13 +50,15 @@ class Level:
                     if evento.button == 1:
                         self.player.shoot(pygame.mouse.get_pos())
 
-            self.player.update()
-            self.enemy_group.update()
-            self.generate_enemies()
-            self.check_collisions()  # Verifica colisões
-            self.run()
-            self.clock.tick(60)  # Limita a taxa de quadros a 60 FPS
-
+            if not self.game_over:
+                self.player.update()
+                self.enemy_group.update()
+                self.generate_enemies()
+                self.check_collisions()
+                self.run()
+            else:
+                self.show_game_over()
+            self.clock.tick(60)
 
         pygame.quit()
 
@@ -73,7 +84,53 @@ class Level:
             self.enemy_group.add(enemy)
 
     def check_collisions(self):
-        # Colisão com projéteis
         collisions = pygame.sprite.groupcollide(self.player.projectile_group, self.enemy_group, True, True)
-        # Colisão com o jogador
+        for enemies in collisions.values():
+            for dead_enemy in enemies:
+                heart = dead_enemy.drop_heart()
+                if heart:
+                    self.heart_group.add(heart)
         player_collisions = pygame.sprite.spritecollide(self.player, self.enemy_group, True)
+        if player_collisions:
+            self.player.take_damage()
+            if self.player.lives <= 0:
+                self.game_over = True
+        heart_collisions = pygame.sprite.spritecollide(self.player, self.heart_group, True)
+        if heart_collisions:
+            self.player.heal()
+
+    def show_game_over(self):
+        game_over_text = self.font.render("Game Over", True, (255, 0, 0))
+        game_over_rect = game_over_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 - 50))
+        self.window.blit(game_over_text, game_over_rect)
+
+        restart_text = self.font.render("Restart", True, (255, 255, 255))
+        restart_rect = restart_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
+        self.window.blit(restart_text, restart_rect)
+
+        menu_text = self.font.render("Menu", True, (255, 255, 255))
+        menu_rect = menu_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 50))
+        self.window.blit(menu_text, menu_rect)
+
+        quit_text = self.font.render("Quit", True, (255, 255, 255))
+        quit_rect = quit_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 100))
+        self.window.blit(quit_text, quit_rect)
+
+        pygame.display.flip()
+
+        waiting_for_input = True # Adicionado para garantir que o loop continue até que uma opção seja escolhida
+
+        while waiting_for_input: # Loop para verificar eventos continuamente
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if restart_rect.collidepoint(event.pos):
+                        self.__init__(self.window, self.name)
+                        self.game_loop()
+                        waiting_for_input = False # Sai do loop após escolher uma opção
+                    elif menu_rect.collidepoint(event.pos):
+                        self.game_over = False
+                        waiting_for_input = False # Sai do loop após escolher uma opção
+                        return
+                    elif quit_rect.collidepoint(event.pos):
+                        pygame.quit()
+                        quit()

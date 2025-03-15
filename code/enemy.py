@@ -8,10 +8,10 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_type = enemy_type
         if enemy_type == "square":
             self.image = pygame.Surface((20, 20))
-            self.image.fill((0, 0, 255))  # Quadrado azul
+            self.image.fill((0, 0, 255))
         elif enemy_type == "circle":
             self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
-            pygame.draw.circle(self.image, (255, 0, 0), (10, 10), 10)  # Círculo vermelho
+            pygame.draw.circle(self.image, (255, 0, 0), (10, 10), 10)
         self.rect = self.image.get_rect(center=position)
         self.player = player
         self.speed = 1
@@ -28,3 +28,15 @@ class Enemy(pygame.sprite.Sprite):
         if distance == 0:
             return (0, 0)
         return (dx / distance, dy / distance)
+
+    def drop_heart(self):
+        if random.random() < 0.05:  # 5% de chance de dropar um coração
+            return Heart(self.rect.center)
+        return None
+
+class Heart(pygame.sprite.Sprite):
+    def __init__(self, position):
+        super().__init__()
+        self.image = pygame.Surface((15, 15), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, (255, 0, 0), (7, 7), 7)
+        self.rect = self.image.get_rect(center=position)
