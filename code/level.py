@@ -108,29 +108,21 @@ class Level:
         restart_rect = restart_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
         self.window.blit(restart_text, restart_rect)
 
-        menu_text = self.font.render("Menu", True, (255, 255, 255))
-        menu_rect = menu_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 50))
-        self.window.blit(menu_text, menu_rect)
-
         quit_text = self.font.render("Quit", True, (255, 255, 255))
-        quit_rect = quit_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 100))
+        quit_rect = quit_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 50))
         self.window.blit(quit_text, quit_rect)
 
         pygame.display.flip()
 
-        waiting_for_input = True # Adicionado para garantir que o loop continue até que uma opção seja escolhida
+        waiting_for_input = True
 
-        while waiting_for_input: # Loop para verificar eventos continuamente
+        while waiting_for_input:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if restart_rect.collidepoint(event.pos):
                         self.__init__(self.window, self.name)
                         self.game_loop()
-                        waiting_for_input = False # Sai do loop após escolher uma opção
-                    elif menu_rect.collidepoint(event.pos):
-                        self.game_over = False
-                        waiting_for_input = False # Sai do loop após escolher uma opção
-                        return
+                        waiting_for_input = False
                     elif quit_rect.collidepoint(event.pos):
                         pygame.quit()
                         quit()

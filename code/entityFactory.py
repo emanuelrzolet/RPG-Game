@@ -9,6 +9,6 @@ class EntityFactory:
         altura = info.current_h
         match entity_name:
             case 'player':
-                return Player('player', (0, altura / 2))
+                return Player('player', (largura / 4, altura / 2)) # muda a posição inicial do player
             case 'enemy':
                 pass
