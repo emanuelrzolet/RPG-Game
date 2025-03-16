@@ -19,12 +19,20 @@ class Level:
         self.clock = pygame.time.Clock()
         self.game_over = False
         self.font = pygame.font.Font(None, 36)
-        self.score = 0 # Inicializa o score
+        self.score = 0
+        
         try:
             self.background = pygame.image.load("./assets/background_1.png").convert_alpha()
         except pygame.error as e:
             print(f"Erro ao carregar a imagem de fundo: {e}")
             self.background = None
+        
+        try:
+            self.heart_image = pygame.image.load("./assets/heart.png").convert_alpha()
+            self.heart_image = pygame.transform.scale(self.heart_image, (20, 20))
+        except pygame.error as e:
+            print(f"Erro ao carregar a imagem de coração: {e}")
+            self.heart_image = None
 
     def run(self):
         self.window.fill((0, 0, 0))
@@ -35,13 +43,17 @@ class Level:
         self.enemy_group.draw(self.window)
         self.heart_group.draw(self.window)
         self.draw_lives()
-        self.draw_score() # Desenha o score na tela
+        self.draw_score()
         pygame.display.flip()
 
     def draw_lives(self):
-        for i in range(self.player.lives):
-            pygame.draw.circle(self.window, (255, 0, 0), (20 + i * 30, 20), 10)
-
+        if self.heart_image:
+            for i in range(self.player.lives):
+                self.window.blit(self.heart_image, (20 + i * 30, 10))
+        else:
+            for i in range(self.player.lives):
+                pygame.draw.circle(self.window, (255, 0, 0), (20 + i * 30, 20), 10)
+    
     def draw_score(self):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         self.window.blit(score_text, (10, 50))
@@ -55,7 +67,7 @@ class Level:
                 if evento.type == pygame.MOUSEBUTTONDOWN:
                     if evento.button == 1:
                         self.player.shoot(pygame.mouse.get_pos())
-
+            
             if not self.game_over:
                 self.player.update()
                 self.enemy_group.update()
@@ -64,8 +76,8 @@ class Level:
                 self.run()
             else:
                 self.show_game_over()
+            
             self.clock.tick(60)
-
         pygame.quit()
 
     def generate_enemies(self):
@@ -88,7 +100,7 @@ class Level:
             enemy_type = random.choice(["square", "circle"])
             enemy = Enemy((x, y), self.player, enemy_type)
             self.enemy_group.add(enemy)
-
+    
     def check_collisions(self):
         collisions = pygame.sprite.groupcollide(self.player.projectile_group, self.enemy_group, True, True)
         for enemies in collisions.values():
@@ -96,12 +108,14 @@ class Level:
                 heart = dead_enemy.drop_heart()
                 if heart:
                     self.heart_group.add(heart)
-                self.score += 100 # Aumenta o score ao matar um inimigo
+                self.score += 100
+        
         player_collisions = pygame.sprite.spritecollide(self.player, self.enemy_group, True)
         if player_collisions:
             self.player.take_damage()
             if self.player.lives <= 0:
                 self.game_over = True
+        
         heart_collisions = pygame.sprite.spritecollide(self.player, self.heart_group, True)
         if heart_collisions:
             self.player.heal()
@@ -111,7 +125,7 @@ class Level:
         game_over_rect = game_over_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 - 50))
         self.window.blit(game_over_text, game_over_rect)
 
-        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255)) # Adiciona o score à tela de game over
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         score_rect = score_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
         self.window.blit(score_text, score_rect)
 
@@ -124,9 +138,8 @@ class Level:
         self.window.blit(quit_text, quit_rect)
 
         pygame.display.flip()
-
+        
         waiting_for_input = True
-
         while waiting_for_input:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:

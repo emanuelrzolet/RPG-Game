@@ -14,7 +14,7 @@ class Enemy(pygame.sprite.Sprite):
             pygame.draw.circle(self.image, (255, 0, 0), (10, 10), 10)
         self.rect = self.image.get_rect(center=position)
         self.player = player
-        self.speed = 2
+        self.speed = 1
 
     def update(self):
         direction = self.calculate_direction()
@@ -30,13 +30,12 @@ class Enemy(pygame.sprite.Sprite):
         return (dx / distance, dy / distance)
 
     def drop_heart(self):
-        if random.random() < 0.05:  # 5% de chance de dropar um coração
+        if random.random() < 0.05:
             return Heart(self.rect.center)
         return None
 
 class Heart(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
-        self.image = pygame.Surface((15, 15), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, (255, 0, 0), (7, 7), 7)
+        self.image = pygame.image.load("./assets/heart.png").convert_alpha() # Carrega a imagem do coração
         self.rect = self.image.get_rect(center=position)
