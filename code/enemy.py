@@ -14,7 +14,7 @@ class Enemy(pygame.sprite.Sprite):
             pygame.draw.circle(self.image, (255, 0, 0), (10, 10), 10)
         self.rect = self.image.get_rect(center=position)
         self.player = player
-        self.speed = 1
+        self.speed = 2
 
     def update(self):
         direction = self.calculate_direction()
