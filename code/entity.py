@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+from abc import ABC, abstractmethod
+import pygame
 
-class Entity:
-    def __init__(self):
-        self.name = None
-        self.surf: Surface = None
-        self.rect: Rect = None
+class Entity(ABC):
+    def __init__(self, name: str, position: tuple):
+        self.name = name
+        self.rect = pygame.Rect(position[0], position[1], 0, 0)  # Retângulo inicial
+        self.speed = 0
 
-    def move()(self, ):
+    @abstractmethod
+    def move(self):
         pass

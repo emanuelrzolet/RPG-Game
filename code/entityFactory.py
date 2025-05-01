@@ -1,9 +1,14 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+import pygame
+from code.player import Player
 
 class EntityFactory:
-    def __init__(self):
-        self.c = None
-
-    def get_entity(self, ):
-        pass
+    @staticmethod
+    def get_entity(entity_name: str, positions=(0, 0)):
+        info = pygame.display.Info()
+        largura = info.current_w
+        altura = info.current_h
+        match entity_name:
+            case 'player':
+                return Player('player', (largura / 4, altura / 2)) # muda a posição inicial do player
+            case 'enemy':
+                pass

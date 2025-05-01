@@ -1,56 +1,152 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import pygame
+import random
 
-
+from code.entity import Entity
+from code.entityFactory import EntityFactory
+from code.enemy import Enemy, Heart
 
 class Level:
-    def __init__(self,window):
+    def __init__(self, window, name):
         self.window = window
+        self.name = name
+        self.entity_list: list[Entity] = []
+        self.player = EntityFactory.get_entity('player')
+        self.entity_list.append(self.player)
+        self.enemy_group = pygame.sprite.Group()
+        self.heart_group = pygame.sprite.Group()
+        self.enemy_timer = 0
+        self.enemy_interval = 60
+        self.clock = pygame.time.Clock()
+        self.game_over = False
+        self.font = pygame.font.Font(None, 36)
+        self.score = 0
+        
+        try:
+            self.background = pygame.image.load("./assets/background_1.png").convert_alpha()
+        except pygame.error as e:
+            print(f"Erro ao carregar a imagem de fundo: {e}")
+            self.background = None
+        
+        try:
+            self.heart_image = pygame.image.load("./assets/heart.png").convert_alpha()
+            self.heart_image = pygame.transform.scale(self.heart_image, (20, 20))
+        except pygame.error as e:
+            print(f"Erro ao carregar a imagem de coração: {e}")
+            self.heart_image = None
 
     def run(self):
-        self.window.fill((0, 0, 0)) # Fundo preto
-        print("run foi chamada")
+        self.window.fill((0, 0, 0))
+        if self.background:
+            self.window.blit(self.background, (0, 0))
+        self.window.blit(self.player.image, self.player.rect)
+        self.player.projectile_group.draw(self.window)
+        self.enemy_group.draw(self.window)
+        self.heart_group.draw(self.window)
+        self.draw_lives()
+        self.draw_score()
+        pygame.display.flip()
+
+    def draw_lives(self):
+        if self.heart_image:
+            for i in range(self.player.lives):
+                self.window.blit(self.heart_image, (20 + i * 30, 10))
+        else:
+            for i in range(self.player.lives):
+                pygame.draw.circle(self.window, (255, 0, 0), (20 + i * 30, 20), 10)
+    
+    def draw_score(self):
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        self.window.blit(score_text, (10, 50))
+
+    def game_loop(self):
+        executando = True
+        while executando:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    executando = False
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    if evento.button == 1:
+                        self.player.shoot(pygame.mouse.get_pos())
+            
+            if not self.game_over:
+                self.player.update()
+                self.enemy_group.update()
+                self.generate_enemies()
+                self.check_collisions()
+                self.run()
+            else:
+                self.show_game_over()
+            
+            self.clock.tick(60)
+        pygame.quit()
+
+    def generate_enemies(self):
+        self.enemy_timer += 1
+        if self.enemy_timer >= self.enemy_interval:
+            self.enemy_timer = 0
+            side = random.choice(["top", "bottom", "left", "right"])
+            if side == "top":
+                x = random.randint(0, self.window.get_width())
+                y = 0
+            elif side == "bottom":
+                x = random.randint(0, self.window.get_width())
+                y = self.window.get_height()
+            elif side == "left":
+                x = 0
+                y = random.randint(0, self.window.get_height())
+            elif side == "right":
+                x = self.window.get_width()
+                y = random.randint(0, self.window.get_height())
+            enemy_type = random.choice(["square", "circle"])
+            enemy = Enemy((x, y), self.player, enemy_type)
+            self.enemy_group.add(enemy)
+    
+    def check_collisions(self):
+        collisions = pygame.sprite.groupcollide(self.player.projectile_group, self.enemy_group, True, True)
+        for enemies in collisions.values():
+            for dead_enemy in enemies:
+                heart = dead_enemy.drop_heart()
+                if heart:
+                    self.heart_group.add(heart)
+                self.score += 100
+        
+        player_collisions = pygame.sprite.spritecollide(self.player, self.enemy_group, True)
+        if player_collisions:
+            self.player.take_damage()
+            if self.player.lives <= 0:
+                self.game_over = True
+        
+        heart_collisions = pygame.sprite.spritecollide(self.player, self.heart_group, True)
+        if heart_collisions:
+            self.player.heal()
+
+    def show_game_over(self):
+        game_over_text = self.font.render("Game Over", True, (255, 0, 0))
+        game_over_rect = game_over_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 - 50))
+        self.window.blit(game_over_text, game_over_rect)
+
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        score_rect = score_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
+        self.window.blit(score_text, score_rect)
+
+        restart_text = self.font.render("Restart", True, (255, 255, 255))
+        restart_rect = restart_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 50))
+        self.window.blit(restart_text, restart_rect)
+
+        quit_text = self.font.render("Quit", True, (255, 255, 255))
+        quit_rect = quit_text.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 100))
+        self.window.blit(quit_text, quit_rect)
+
         pygame.display.flip()
         
-        
-        
-        
-    # Teste
-    # clock = pygame.time.Clock()
-    # running = True
-    # dt = 0
-
-    # player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-
-    # while running:
-    #     # poll for events
-    #     # pygame.QUIT event means the user clicked X to close your window
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             running = False
-
-    #     # fill the screen with a color to wipe away anything from last frame
-    #     screen.fill("purple")
-
-    #     pygame.draw.circle(screen, "red", player_pos, 40)
-
-    #     keys = pygame.key.get_pressed()
-    #     if keys[pygame.K_w]:
-    #         player_pos.y -= 300 * dt
-    #     if keys[pygame.K_s]:
-    #         player_pos.y += 300 * dt
-    #     if keys[pygame.K_a]:
-    #         player_pos.x -= 300 * dt
-    #     if keys[pygame.K_d]:
-    #         player_pos.x += 300 * dt
-
-    #     # flip() the display to put your work on screen
-    #     pygame.display.flip()
-
-    #     # limits FPS to 60
-    #     # dt is delta time in seconds since last frame, used for framerate-
-    #     # independent physics.
-    #     dt = clock.tick(60) / 1000
-            
+        waiting_for_input = True
+        while waiting_for_input:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if restart_rect.collidepoint(event.pos):
+                        self.__init__(self.window, self.name)
+                        self.game_loop()
+                        waiting_for_input = False
+                    elif quit_rect.collidepoint(event.pos):
+                        pygame.quit()
+                        quit()

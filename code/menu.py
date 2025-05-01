@@ -12,6 +12,7 @@ class Menu:
         self.window = window
         self.atualizar_resolucao()
         self.font = pygame.font.Font(None, 36)
+        self.musica_ligada = True # Adiciona a variável de controle da música
 
     def atualizar_resolucao(self):
         self.largura, self.altura = pygame.display.get_surface().get_size()
@@ -33,7 +34,6 @@ class Menu:
         self.desenhar_texto("Sair", self.botao_sair.center)
 
     def menu_opcoes(self):
-        musica_ligada = True
         tela_cheia = False
 
         while True:
@@ -47,7 +47,11 @@ class Menu:
                     quit()
                 if evento.type == pygame.MOUSEBUTTONDOWN:
                     if botao_musica.collidepoint(evento.pos):
-                        musica_ligada = not musica_ligada
+                        self.musica_ligada = not self.musica_ligada # Inverte o estado da música
+                        if self.musica_ligada:
+                            pygame.mixer.music.unpause() # Retoma a música
+                        else:
+                            pygame.mixer.music.pause() # Pausa a música
                     elif botao_tela.collidepoint(evento.pos):
                         tela_cheia = not tela_cheia
                         if tela_cheia:
@@ -62,7 +66,7 @@ class Menu:
             pygame.draw.rect(self.window, (0, 128, 255), botao_musica)
             pygame.draw.rect(self.window, (0, 128, 255), botao_tela)
             pygame.draw.rect(self.window, (0, 128, 255), botao_voltar)
-            self.desenhar_texto(f"Música: {'Ligada' if musica_ligada else 'Desligada'}", botao_musica.center)
+            self.desenhar_texto(f"Música: {'Ligada' if self.musica_ligada else 'Desligada'}", botao_musica.center)
             self.desenhar_texto(f"Tela: {'Cheia' if tela_cheia else 'Janela'}", botao_tela.center)
             self.desenhar_texto("Voltar", botao_voltar.center)
             pygame.display.flip()
@@ -75,8 +79,7 @@ class Menu:
                     quit()
                 if evento.type == pygame.MOUSEBUTTONDOWN:
                     if self.botao_novo_jogo.collidepoint(evento.pos):
-                        level = Level(self.window)
-                        level.run()
+                        return True
                     elif self.botao_opcoes.collidepoint(evento.pos):
                         self.menu_opcoes()
                     elif self.botao_sair.collidepoint(evento.pos):
